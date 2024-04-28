@@ -1,7 +1,7 @@
 import requests
 
-# 4-digit integer array of the number to be guessed by the players
-Num =[]
+
+random_number=0
 
 #
 all_correct=False
@@ -25,9 +25,8 @@ def get_number():
     resp = requests.get('https://www.random.org/integers/?num=4&min=0&max=7&col=4&base=10&format=plain&rnd=new') 
    #Variable that stores the response of the request and eliminates blanks
     num = ''.join(resp.text.split())
-    #stores each digit of the number as an integer in the Num array.
-    for digit in num:
-        Num.append(int(digit))
+    #
+    random_number=(int(num))
 
 
 
@@ -37,6 +36,15 @@ def playerInput():
     return input()
 
 
+def validate_input(n):
+    if (len(n)!=4 or not player_num.isdigit()):
+      print ("Please enter only 4-digit numbers")
+      return False
+    else:
+        return True
+
+        
+
     
 welcome()
 get_number()
@@ -44,7 +52,15 @@ get_number()
 while num_attempts>0:
     if(num_attempts==10):
         player_num= playerInput()
+        if validate_input(player_num):
+            print("correct")
+        else:
+            player_num= input()
+            while validate_input(player_num)==False:
+                player_num= input()
+        
         num_attempts-=1
+
     else :
         print(f"You have {num_attempts} attempts and your previous results were:")
         num_attempts-=1
