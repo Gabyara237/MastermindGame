@@ -1,11 +1,14 @@
 import requests
 
 ############################  Global variables ######################################
+
+# Variable where the number to be guessed is stored
 random_number = []
 
+# Variable storing if a player has won
 winner = False
 
-#
+# Boolean variable storing the status of all hits 
 all_correct=False
 
 #Variable that stores the number of attempts of a player. 
@@ -92,20 +95,38 @@ def evaluate_player_number(n,number):
     position_digit=-1
     correct_number_count=0
     correct_position_count=0
-     
+    digits_evaluated={}
+    
+
     print(number)
     for digit in n:
         position_digit+=1
         if digit in number:
-            correct_number_count +=1
-            if position_digit==number.index(digit):
-                number[position_digit]='10'
-                correct_position_count +=1
+            if digit not in digits_evaluated:
+                #Cuento las veces que aparece
+                count_appearances=number.count(digit)
+                #Guardo en el registro las veces que aparece
+                digits_evaluated[digit]=count_appearances-1
+                correct_number_count +=1
+                if position_digit==number.index(digit):
+                    number[position_digit]='10'
+                    correct_position_count +=1
+
+            elif digit in digits_evaluated:
+                if digits_evaluated[digit]>0:
+                    correct_number_count +=1
+                    digits_evaluated[digit] -=1
+                    if position_digit==number.index(digit):
+                        number[position_digit]='10'
+                        correct_position_count +=1
+                else:
+                    if position_digit==number.index(digit):
+                        number[position_digit]='10'
+                        correct_position_count +=1
 
     
     result(n,correct_number_count,correct_position_count)
         
-
 
 
 
@@ -144,6 +165,7 @@ while num_attempts>0:
            
             while validate_input(player_num)==False:
                 player_num= input()
+            number=random_number.copy()
             evaluate_player_number(player_num,number)
         num_attempts-=1
 
