@@ -23,18 +23,31 @@ attempts=[]
 #Function that displays the welcome to the game 
 def welcome():
     print("**************************************")
-    print("*    Welcome to Mastermind Game!   *")
-    print("*         By Gabriela Araujo       *")
-    print("**************************************\n")
+    print("*                                    *")
+    print("*    Welcome to Mastermind Game!     *")
+    print("*         By Gabriela Araujo         *")
+    print("*                                    *") 
+    print("*************************************\n")
  
 
 # Function that displays a congratulatory message when the player matches all 4 numbers. 
 def you_won():
     print("*******************************************")
+    print("*                                         *")
     print("*      You won! Congratulations!          *")
     print("*   You guessed the 4 digit number!!      *")
+    print("*                                         *")
     print("*****************************************\n")
 
+# Function that displays a congratulatory message when the player matches all 4 numbers. 
+def game_over():
+    print("*******************************************")
+    print("*******************************************")
+    print("*                                         *")
+    print("*               GAME OVER!                *")
+    print("*                                         *")
+    print("*******************************************")
+    print("*****************************************\n")
 
 #Function that obtains the 4-digit number randomly 
 def get_number():
@@ -170,6 +183,7 @@ while num_attempts>0:
         num_attempts-=1
 
 
-
+if num_attempts==0 and not winner:
+    game_over()
 
 
