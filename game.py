@@ -17,9 +17,7 @@ num_attempts=10
 # List containing all the attempts of a player
 attempts=[]
 
-
 ############################  Functions ######################################
-
 
 def reset():
     global random_number,winner,all_correct,num_attempts,attempts
@@ -70,6 +68,7 @@ def you_won():
     *******************************************\n
     """
     print(you_won)
+
 # Function that displays a congratulatory message when the player matches all 4 numbers. 
 def game_over():
     game_over="""
@@ -89,7 +88,7 @@ def get_number():
     #The variable is reset each time it is called only save the 4 digits of the random number to be guessed.
     random_number = []
 
-    #request to get 4 digit random number 
+    #request to get 4 digit random number from an api
     resp = requests.get('https://www.random.org/integers/?num=4&min=0&max=7&col=4&base=10&format=plain&rnd=new') 
    #Variable that stores the response of the request and eliminates blanks
     num = ''.join(resp.text.split())
@@ -141,16 +140,15 @@ def result(n, correct_number_count, correct_position_count):
         winner=True
 
 # Function that evaluates the number entered by the player with respect to the random number.
-def evaluate_player_number(n,number):
+def evaluate_player_number(player_number,number):
 
     position_digit=-1
     correct_number_count=0
     correct_position_count=0
     digits_evaluated={}
-    
 
     print(number)
-    for digit in n:
+    for digit in player_number:
         position_digit+=1
         if digit in number:
             if digit not in digits_evaluated:
@@ -176,7 +174,7 @@ def evaluate_player_number(n,number):
                         correct_position_count +=1
 
     
-    result(n,correct_number_count,correct_position_count)
+    result(player_number,correct_number_count,correct_position_count)
         
 
 ##############################  Extension  #################################
@@ -199,8 +197,92 @@ def display_instructions():
     """
     print (instructions)
 
+
+
+def display_Number_of_players_menu():
+    menu="""
+    ***********************************************
+    *                 Game Options                *
+    ***********************************************
+    *        Select the number of players         *
+    *                                             *
+    * 1. One player                               *
+    * 2. Two players                              *        
+    * 3. Three players                            * 
+    * 2. Four players                             * 
+    *                                             *
+    ***********************************************
+    """
+    print (menu)
+
+def display_difficulty_level_menu():
+    menu="""
+    ***********************************************
+    *                 Game Options                *
+    ***********************************************
+    *          Select difficulty level            *
+    *                                             *
+    * 1. Easy                                     *
+    *     Number of digits: 4 digits              *
+    *     Number range: digits from 0 to 5 only.  *
+    *     Available attempts: 12 attempts.        *
+    * 2. Medium                                   *
+    *     Number of digits: 4 digits              *
+    *     Number range: digits from 0 to 7 only.  *
+    *     Available attempts: 10 attempts.        *      
+    * 3. Difficult                                * 
+    *     Number of digits: 4 digits              *
+    *     Number range: digits from 0 to 9 only.  *
+    *     Available attempts: 8 attempts.         *
+    *                                             *
+    ***********************************************
+    """
+    print (menu)
 def best_player():
     return 0
+
+# Function that validates the player's input, ensuring that it is a valid number. 
+def validate_number_of_players_input(option):
+    while True:
+        if option.isdigit():
+            op=int(option)
+            if 1<=op<=4:
+                return True
+            else:
+                print(" Please enter a valid option, the number must be in the range of 1 to 4.")
+                op=input()
+        else:
+            print(" Please enter a valid option, a number from 1 to 4.  ")
+            op=input()
+
+# Function that validates the player's input, ensuring that it is a valid number. 
+def validate_difficulty_level_input(option):
+    while True:
+        
+        if option.isdigit():
+            op = int(option)
+            if 1<=op<=3:
+                return True
+            else:
+                print(" Please enter a valid option, the number must be in the range of 1 to 3.")
+                op=input()
+        else:
+            print(" Please enter a valid option, a number from 1 to 3.")
+            op=input()
+
+# Menu that shows the options of the game, these options are part of the project extensions 
+def game_options():
+
+    display_Number_of_players_menu()
+    number_of_players=input()
+    validate_number_of_players_input(number_of_players)
+    display_difficulty_level_menu()
+    difficulty_level=input()
+    validate_difficulty_level_input(difficulty_level)
+    if validate_difficulty_level_input and validate_number_of_players_input:
+        return difficulty_level, number_of_players
+    
+
 
 ############################  Game logic  ######################################
     
@@ -211,6 +293,9 @@ def game():
     global attempts
     get_number()
     
+    difficulty_leve,number_of_players=game_options()
+    
+
     print(num_attempts)
     while num_attempts>0:
         #Verifying that there is no winner
@@ -252,7 +337,6 @@ def game():
     if num_attempts==0 and not winner:
         reset()
         game_over()
-
 
 
 def menu_game():
