@@ -20,37 +20,74 @@ attempts=[]
 
 ############################  Functions ######################################
 
+
+def reset():
+    global random_number,winner,all_correct,num_attempts,attempts
+    random_number = []
+    winner = False
+    all_correct=False 
+    num_attempts=10
+    attempts=[]
+
+
 #Function that displays the welcome to the game 
 def welcome():
-    print("**************************************")
-    print("*                                    *")
-    print("*    Welcome to Mastermind Game!     *")
-    print("*         By Gabriela Araujo         *")
-    print("*                                    *") 
-    print("*************************************\n")
- 
+    welcome="""
+    **************************************
+    *                                    *
+    *    Welcome to Mastermind Game!     *
+    *         By Gabriela Araujo         *
+    *                                    * 
+    **************************************\n
+    """
+    reset()
+    print(welcome)
+
+def displayMenu():
+    menu="""
+    ***********************************************
+    *                  MENU                       *
+    ***********************************************
+    *          Please select an option            *
+    *                                             *
+    * 1. Play                                     *
+    * 2. Game Instructions                        *
+    * 3. Top 10 best players                      *
+    * 4. Exit                                     *
+    *                                             *
+    ***********************************************
+    """
+    print (menu)
 
 # Function that displays a congratulatory message when the player matches all 4 numbers. 
 def you_won():
-    print("*******************************************")
-    print("*                                         *")
-    print("*      You won! Congratulations!          *")
-    print("*   You guessed the 4 digit number!!      *")
-    print("*                                         *")
-    print("*****************************************\n")
-
+    you_won="""
+    *******************************************
+    *                                         *
+    *      You won! Congratulations!          *
+    *   You guessed the 4 digit number!!      *
+    *                                         *
+    *******************************************\n
+    """
+    print(you_won)
 # Function that displays a congratulatory message when the player matches all 4 numbers. 
 def game_over():
-    print("*******************************************")
-    print("*******************************************")
-    print("*                                         *")
-    print("*               GAME OVER!                *")
-    print("*                                         *")
-    print("*******************************************")
-    print("*****************************************\n")
+    game_over="""
+    *******************************************
+    *******************************************
+    *                                         *
+    *               GAME OVER!                *
+    *                                         *
+    *******************************************
+    *******************************************\n
+    """
+    print(game_over)
 
 #Function that obtains the 4-digit number randomly 
 def get_number():
+    global random_number
+    #The variable is reset each time it is called only save the 4 digits of the random number to be guessed.
+    random_number = []
 
     #request to get 4 digit random number 
     resp = requests.get('https://www.random.org/integers/?num=4&min=0&max=7&col=4&base=10&format=plain&rnd=new') 
@@ -68,7 +105,7 @@ def playerInput():
 
 # Function that validates that the input data are numbers and that they are 4 digits long.
 def validate_input(n):
-    if (len(n)!=4 or not player_num.isdigit()):
+    if (len(n)!=4 or not n.isdigit()):
       print ("Please enter only 4-digit numbers")
       return False
     else:
@@ -100,6 +137,7 @@ def result(n, correct_number_count, correct_position_count):
         add_attempts(result )
     else:
         you_won()
+        reset()
         winner=True
 
 # Function that evaluates the number entered by the player with respect to the random number.
@@ -141,49 +179,96 @@ def evaluate_player_number(n,number):
     result(n,correct_number_count,correct_position_count)
         
 
+##############################  Extension  #################################
 
+def display_instructions():
+    instructions="""
+    ***********************************************************************
+    *                                                                     *
+    *                           Instructions                              *
+    *                                                                     *
+    *  Mastermind is a guessing game where you must decipher a 4-digit    *
+    *  number to achieve victory.With each attempt you make to guess the  *
+    *  number, you will receive a feeback to help you perfect your next   *
+    *  attempt. The game continues until you guess the correct code or    *
+    *  exhaust all your attempts.                                         * 
+    *                                                                     *
+    *                   Now let's PLAY and GOOD LUCK !                    *
+    *                                                                     *
+    ***********************************************************************
+    """
+    print (instructions)
+
+def best_player():
+    return 0
 
 ############################  Game logic  ######################################
     
-welcome()
-get_number()
-
-while num_attempts>0:
-    #Verifying that there is no winner
-    if winner:
-        break
+def game():
+    global num_attempts
+    global winner 
+    global all_correct
+    global attempts
+    get_number()
     
-    if(num_attempts==10):
-        print(f"You have {num_attempts} attempts.")
-        player_num= playerInput()
-        if validate_input(player_num):
-            number=random_number.copy()
-            evaluate_player_number(player_num, number)
-        else:
-            player_num= input()
-            while validate_input(player_num)==False:
-                player_num= input()
+    print(num_attempts)
+    while num_attempts>0:
+        #Verifying that there is no winner
+        if winner:
+            reset()
+            break
+        
+        if(num_attempts==10):
+            print(f"You have {num_attempts} attempts.")
+            player_num= playerInput()
+            if validate_input(player_num):
                 number=random_number.copy()
-            evaluate_player_number(player_num, number)
-        num_attempts-=1
-    else :
-        print(f"You have {num_attempts} attempts.\nYour previous attempts were:\n")
-        display_previous_attempts()
-        player_num= playerInput()
-        if validate_input(player_num):
-            number=random_number.copy()
-            evaluate_player_number(player_num, number)
-        else:
-            player_num= input()
-           
-            while validate_input(player_num)==False:
+                evaluate_player_number(player_num,number)
+            else:
                 player_num= input()
-            number=random_number.copy()
-            evaluate_player_number(player_num,number)
-        num_attempts-=1
+                while validate_input(player_num)==False:
+                    player_num= input()
+                
+                number=random_number.copy()
+                evaluate_player_number(player_num,number)
+            num_attempts-=1
+        else :
+            print(f"You have {num_attempts} attempts.\nYour previous attempts were:\n")
+            display_previous_attempts()
+            player_num= playerInput()
+            if validate_input(player_num):
+                number=random_number.copy()
+                evaluate_player_number(player_num, number)
+            else:
+                player_num= input()
+            
+                while validate_input(player_num)==False:
+                    player_num= input()
+                number=random_number.copy()
+                evaluate_player_number(player_num,number)
+            num_attempts-=1
 
 
-if num_attempts==0 and not winner:
-    game_over()
+    if num_attempts==0 and not winner:
+        reset()
+        game_over()
 
 
+
+def menu_game():
+    while True:
+        displayMenu()
+        option=input()
+        if option=="1":
+            game()
+        elif option=="2":
+            display_instructions()
+        elif option== "3":
+            best_player()
+        elif option== "4":
+            break
+        else:
+            print("Invalid option. Please choose a valid option.") 
+
+welcome()
+menu_game()
