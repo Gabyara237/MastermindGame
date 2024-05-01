@@ -282,7 +282,24 @@ def game_options():
     if validate_difficulty_level_input and validate_number_of_players_input:
         return difficulty_level, number_of_players
     
+def request_player_names(number_of_players):
+    players=[]
+    for i in range(int(number_of_players)):
+       player=input(f"Enter the name of the player number {i+1}")
+       players.append(player)
+    return players
 
+def initialize_player_attempts(player_names,difficulty_level):
+    if difficulty_level=='1':
+        players_attempts= {name:12 for name in player_names}
+
+    elif difficulty_level=='2':
+        players_attempts={name:10 for name in player_names}
+
+    else:
+        players_attempts={name:8 for name in player_names}
+
+    return players_attempts
 
 ############################  Game logic  ######################################
     
@@ -293,8 +310,14 @@ def game():
     global attempts
     get_number()
     
-    difficulty_leve,number_of_players=game_options()
-    
+    difficulty_level,number_of_players=game_options()
+    player_names=request_player_names(number_of_players)
+    #Inicializamos los intentos de cada jugador segun el nivel de dificultad seleccionado:
+    players_attempt=initialize_player_attempts(player_names,difficulty_level)
+
+    for name, attempts in players_attempt.items():
+        print (f"{name}: {attempts} attempts" )
+
 
     print(num_attempts)
     while num_attempts>0:
