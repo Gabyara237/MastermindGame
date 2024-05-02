@@ -193,6 +193,7 @@ def evaluate_player_number(name,players,player_number,number):
 
 ##############################  Extension  #################################
 
+#Funtion that display message with instructions to the players
 def display_instructions():
     instructions="""
     ***********************************************************************
@@ -212,7 +213,7 @@ def display_instructions():
     print (instructions)
 
 
-
+# Function that displays menu for player to choose number of players
 def display_Number_of_players_menu():
     menu="""
     ***********************************************
@@ -229,6 +230,8 @@ def display_Number_of_players_menu():
     """
     print (menu)
 
+
+# Function that displays menu for player to choose difficulty level
 def display_difficulty_level_menu():
     menu="""
     ***********************************************
@@ -256,52 +259,48 @@ def best_player():
     return 0
 
 # Function that validates the player's input, ensuring that it is a valid number. 
-def validate_number_of_players_input(option):
+def validate_number_of_players_input():
     while True:
+        option=input()
         if option.isdigit():
             op=int(option)
             if 1<=op<=4:
-                return True
+                return option
             else:
                 print(" Please enter a valid option, the number must be in the range of 1 to 4.")
-                op=int(input())
         else:
             print(" Please enter a valid option, a number from 1 to 4.  ")
-            op=int(input())
 
 # Function that validates the player's input, ensuring that it is a valid number. 
-def validate_difficulty_level_input(option):
+def validate_difficulty_level_input():
     while True:
-        
+        option=input()
         if option.isdigit():
             op = int(option)
             if 1<=op<=3:
-                return True
+                return option
             else:
                 print(" Please enter a valid option, the number must be in the range of 1 to 3.")
-                op=int(input())
         else:
             print(" Please enter a valid option, a number from 1 to 3.")
-            op=int(input())
 
 # Menu that shows the options of the game, these options are part of the project extensions 
 def game_options():
 
     display_Number_of_players_menu()
-    number_of_players=input()
-    validate_number_of_players_input(number_of_players)
+    number_of_players=validate_number_of_players_input()
     display_difficulty_level_menu()
-    difficulty_level=input()
-    validate_difficulty_level_input(difficulty_level)
-    if validate_difficulty_level_input and validate_number_of_players_input:
-        return difficulty_level, number_of_players
-    
+    difficulty_level=validate_difficulty_level_input()
+    return difficulty_level, number_of_players
+
+# Function that requests player names and stores them in a list
 def request_player_names(number_of_players):
     players=[]
     for i in range(int(number_of_players)):
        player=input(f"Enter the name of the player number {i+1}:\n")
        players.append(player)
     return players
+
 
 def initialize_player_attempts(player_names,difficulty_level):
     global num_attempts
