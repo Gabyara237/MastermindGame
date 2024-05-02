@@ -12,10 +12,12 @@ winner = False
 all_correct=False
 
 #Variable that stores the number of attempts of a player. 
-num_attempts=10
+num_attempts=0
 
 # List containing all the attempts of a player
 attempts=[]
+
+max_attempts=0
 
 ############################  Functions ######################################
 
@@ -24,7 +26,7 @@ def reset():
     random_number = []
     winner = False
     all_correct=False 
-    num_attempts=10
+    num_attempts=0
     attempts=[]
 
 
@@ -58,14 +60,17 @@ def displayMenu():
     print (menu)
 
 # Function that displays a congratulatory message when the player matches all 4 numbers. 
-def you_won():
-    you_won="""
-    *******************************************
-    *                                         *
-    *      You won! Congratulations!          *
-    *   You guessed the 4 digit number!!      *
-    *                                         *
-    *******************************************\n
+def you_won(name,players):
+    you_won=f"""
+    ***********************************************
+    *                                             *
+    *              {name} you won!                *
+    *                                             *
+    *             Congratulations!                *
+    *       You guessed the 4 digit number        *
+    *         on attempt number {max_attempts-int(players[name]['player_attempts'])+1}!!               *
+    *                                             *
+    ***********************************************\n
     """
     print(you_won)
 
@@ -83,14 +88,22 @@ def game_over():
     print(game_over)
 
 #Function that obtains the 4-digit number randomly 
-def get_number():
+def get_number(difficulty_level):
+
     global random_number
     #The variable is reset each time it is called only save the 4 digits of the random number to be guessed.
     random_number = []
-
-    #request to get 4 digit random number from an api
-    resp = requests.get('https://www.random.org/integers/?num=4&min=0&max=7&col=4&base=10&format=plain&rnd=new') 
-   #Variable that stores the response of the request and eliminates blanks
+    if difficulty_level=='1':
+        #request to get 4 digit random number from an api
+        resp = requests.get('https://www.random.org/integers/?num=4&min=0&max=5&col=4&base=10&format=plain&rnd=new')
+    
+    elif difficulty_level=='2':
+        resp= requests.get('https://www.random.org/integers/?num=4&min=0&max=7&col=4&base=10&format=plain&rnd=new')
+    
+    else:
+        resp= requests.get('https://www.random.org/integers/?num=4&min=0&max=9&col=4&base=10&format=plain&rnd=new')
+     
+    #Variable that stores the response of the request and eliminates blanks
     num = ''.join(resp.text.split())
     #
     for digit in num:
@@ -111,36 +124,37 @@ def validate_input(n):
         return True
 
 # Function that stores the result of the player's attempts.
-def add_attempts(result):
-    attempts.append({"Attempt": result})
+def add_attempts(name,players,result):
+
+    players[name]['attempt_history'].append({"Attempt": result})
 
 # Function that shows the player his previous attempts and their results.  
-def display_previous_attempts():
-    for result in attempts:
-        for clave, valor in result.items():
-            print(f"{clave}: {valor}")
-            print()  
-
+def display_previous_attempts(name,players):
+    for result in players[name]['attempt_history']:
+        print(result['Attempt'])
+        
 # Function that evaluates the number of correct numbers and correct positions to create the results.
-def result(n, correct_number_count, correct_position_count):
+def result(name,players,n, correct_number_count, correct_position_count):
     global winner
 
     if correct_number_count==0:
         result= f"Number '{n}'. Result: All are incorrect"
         print(result)
-        add_attempts(result )
+        
+        add_attempts(name,players,result )
     elif correct_position_count!=4:
         result= f"Number '{n}'. Result: {correct_number_count} correct number and {correct_position_count} correct position.\n"
         print(result)
+
         # Function call that stores the result of the player's attempts.
-        add_attempts(result )
+        add_attempts(name,players,result )
     else:
-        you_won()
+        you_won(name,players)
         reset()
         winner=True
 
 # Function that evaluates the number entered by the player with respect to the random number.
-def evaluate_player_number(player_number,number):
+def evaluate_player_number(name,players,player_number,number):
 
     position_digit=-1
     correct_number_count=0
@@ -174,7 +188,7 @@ def evaluate_player_number(player_number,number):
                         correct_position_count +=1
 
     
-    result(player_number,correct_number_count,correct_position_count)
+    result(name,players,player_number,correct_number_count,correct_position_count)
         
 
 ##############################  Extension  #################################
@@ -250,10 +264,10 @@ def validate_number_of_players_input(option):
                 return True
             else:
                 print(" Please enter a valid option, the number must be in the range of 1 to 4.")
-                op=input()
+                op=int(input())
         else:
             print(" Please enter a valid option, a number from 1 to 4.  ")
-            op=input()
+            op=int(input())
 
 # Function that validates the player's input, ensuring that it is a valid number. 
 def validate_difficulty_level_input(option):
@@ -265,10 +279,10 @@ def validate_difficulty_level_input(option):
                 return True
             else:
                 print(" Please enter a valid option, the number must be in the range of 1 to 3.")
-                op=input()
+                op=int(input())
         else:
             print(" Please enter a valid option, a number from 1 to 3.")
-            op=input()
+            op=int(input())
 
 # Menu that shows the options of the game, these options are part of the project extensions 
 def game_options():
@@ -285,21 +299,26 @@ def game_options():
 def request_player_names(number_of_players):
     players=[]
     for i in range(int(number_of_players)):
-       player=input(f"Enter the name of the player number {i+1}")
+       player=input(f"Enter the name of the player number {i+1}:\n")
        players.append(player)
     return players
 
 def initialize_player_attempts(player_names,difficulty_level):
+    global num_attempts
+
     if difficulty_level=='1':
-        players_attempts= {name:12 for name in player_names}
+        players= {name:{'attempt_history':[],'player_attempts':12} for name in player_names}
+        num_attempts=12
 
     elif difficulty_level=='2':
-        players_attempts={name:10 for name in player_names}
+        players={name:{'attempt_history':[],'player_attempts':10} for name in player_names}
+        num_attempts=10
 
     else:
-        players_attempts={name:8 for name in player_names}
+        players={name:{'attempts_history':[],'player_attempts':8}for name in player_names}
+        num_attempts=8
 
-    return players_attempts
+    return players
 
 ############################  Game logic  ######################################
     
@@ -308,58 +327,63 @@ def game():
     global winner 
     global all_correct
     global attempts
-    get_number()
+    global max_attempts
     
     difficulty_level,number_of_players=game_options()
     player_names=request_player_names(number_of_players)
     #Inicializamos los intentos de cada jugador segun el nivel de dificultad seleccionado:
-    players_attempt=initialize_player_attempts(player_names,difficulty_level)
+    players=initialize_player_attempts(player_names,difficulty_level)
+    get_number(difficulty_level)
 
-    for name, attempts in players_attempt.items():
-        print (f"{name}: {attempts} attempts" )
+    max_attempts=num_attempts
 
-
-    print(num_attempts)
     while num_attempts>0:
-        #Verifying that there is no winner
-        if winner:
-            reset()
-            break
-        
-        if(num_attempts==10):
-            print(f"You have {num_attempts} attempts.")
-            player_num= playerInput()
-            if validate_input(player_num):
-                number=random_number.copy()
-                evaluate_player_number(player_num,number)
-            else:
-                player_num= input()
-                while validate_input(player_num)==False:
+    
+        for name, inf in players.items():
+            
+            #Verifying that there is no winner
+            if winner:
+                break
+
+            print (f"\n\n****             It's {name}'s turn to play             ****\n\n" )    
+            
+            if(inf['player_attempts']==max_attempts):
+                print(f"{name}, you have {inf['player_attempts']} attempts.")
+                player_num= playerInput()
+                if validate_input(player_num):
+                    number=random_number.copy()
+                    evaluate_player_number(name,players,player_num,number)
+                else:
+                    player_num= input()
+                    while validate_input(player_num)==False:
+                        player_num= input()
+                    
+                    number=random_number.copy()
+                    evaluate_player_number(name,players,player_num,number)
+                num_attempts-=1
+                inf['player_attempts'] -= 1
+            else :
+                print(f"{name}, you have {inf['player_attempts']} attempts.\nYour previous attempts were:\n")
+                display_previous_attempts(name,players)
+                player_num= playerInput()
+                if validate_input(player_num):
+                    number=random_number.copy()
+                    evaluate_player_number(name,players,player_num, number)
+                else:
                     player_num= input()
                 
-                number=random_number.copy()
-                evaluate_player_number(player_num,number)
-            num_attempts-=1
-        else :
-            print(f"You have {num_attempts} attempts.\nYour previous attempts were:\n")
-            display_previous_attempts()
-            player_num= playerInput()
-            if validate_input(player_num):
-                number=random_number.copy()
-                evaluate_player_number(player_num, number)
-            else:
-                player_num= input()
-            
-                while validate_input(player_num)==False:
-                    player_num= input()
-                number=random_number.copy()
-                evaluate_player_number(player_num,number)
-            num_attempts-=1
-
-
-    if num_attempts==0 and not winner:
-        reset()
-        game_over()
+                    while validate_input(player_num)==False:
+                        player_num= input()
+                    number=random_number.copy()
+                    evaluate_player_number(name,players,player_num,number)
+                num_attempts-=1
+                inf['player_attempts'] -= 1
+        
+        if num_attempts==0 and not winner:
+            reset()
+            game_over()
+        elif winner:
+            reset()
 
 
 def menu_game():
