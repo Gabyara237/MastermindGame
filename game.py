@@ -52,7 +52,7 @@ def displayMenu():
     *                                             *
     * 1. Play                                     *
     * 2. Game Instructions                        *
-    * 3. Top 10 best players                      *
+    * 3. Top 3 best players                       *
     * 4. Exit                                     *
     *                                             *
     ***********************************************
@@ -154,17 +154,19 @@ def result(name,players,n, correct_number_count, correct_position_count):
         winner=True
 
 # Function that evaluates the number entered by the player with respect to the random number.
-def evaluate_player_number(name,players,player_number,number):
+def evaluate_player_number(difficulty_level,name,players,player_number,number):
 
     position_digit=-1
     correct_number_count=0
     correct_position_count=0
     digits_evaluated={}
+    
 
     print(number)
     for digit in player_number:
         position_digit+=1
         if digit in number:
+            
             if digit not in digits_evaluated:
                 #Cuento las veces que aparece
                 count_appearances=number.count(digit)
@@ -189,6 +191,7 @@ def evaluate_player_number(name,players,player_number,number):
 
     
     result(name,players,player_number,correct_number_count,correct_position_count)
+    add_score(difficulty_level,name,players,correct_number_count,correct_position_count)
         
 
 ##############################  Extension  #################################
@@ -247,7 +250,7 @@ def display_difficulty_level_menu():
     *     Number of digits: 4 digits              *
     *     Number range: digits from 0 to 7 only.  *
     *     Available attempts: 10 attempts.        *      
-    * 3. Difficult                                * 
+    * 3. Hard                                     * 
     *     Number of digits: 4 digits              *
     *     Number range: digits from 0 to 9 only.  *
     *     Available attempts: 8 attempts.         *
@@ -306,18 +309,72 @@ def initialize_player_attempts(player_names,difficulty_level):
     global num_attempts
 
     if difficulty_level=='1':
-        players= {name:{'attempt_history':[],'player_attempts':12} for name in player_names}
+        players= {name:{'attempt_history':[],'player_attempts':12,'score':0,'last_score':0,'penalized':False} for name in player_names}
         num_attempts=12
 
     elif difficulty_level=='2':
-        players={name:{'attempt_history':[],'player_attempts':10} for name in player_names}
+        players={name:{'attempt_history':[],'player_attempts':10,'score':0,'last_score':0,'penalized': False} for name in player_names}
         num_attempts=10
 
     else:
-        players={name:{'attempts_history':[],'player_attempts':8}for name in player_names}
+        players={name:{'attempts_history':[],'player_attempts':8,'score':0,'last_score':0, 'penalized': False}for name in player_names}
         num_attempts=8
 
     return players
+
+
+# Function that stores the result of the player's attempts.
+def add_score(difficulty_level,name,players,correct_number_count,correct_position_count):
+
+    if difficulty_level=='1':
+        new_score=int(correct_number_count)*600 +int(correct_position_count)*1200
+        if players[name]['last_score']<new_score:
+            players[name]['score']+=new_score
+            players[name]['last_score']=new_score
+        else:
+            #We penalize the player's score by decreasing his number of successes compared to his previous attempt.
+            new_score-=50
+            players[name]['score']+=new_score
+            players[name]['last_score']=new_score
+            players[name]['penalized']=True
+
+    elif difficulty_level=='2':
+        new_score=int(correct_number_count)*800 + int(correct_position_count)*1600
+        if players[name]['last_score']<new_score:
+            players[name]['score']+=new_score
+            players[name]['last_score']=new_score
+        else:
+            new_score-=100
+            players[name]['score']+=new_score
+            players[name]['last_score']=new_score
+            players[name]['penalized']=True
+
+    else:
+        new_score=int(correct_number_count)*1200 +int(correct_position_count)*2400
+        if players[name]['last_score']<new_score:
+            players[name]['score']+=new_score
+            players[name]['last_score']=new_score
+        else:
+            new_score-=150
+            players[name]['score']+=new_score
+            players[name]['last_score']=new_score
+            players[name]['penalized']=True
+
+def display_score_player(name, players,difficulty_level):
+    if players[name]['penalized']==True:
+        
+        if difficulty_level=='1':
+            print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 50 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
+        elif difficulty_level=='2':
+            print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 109 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
+        else: 
+            print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 150 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
+
+        players[name]['penalized']=False
+    else:
+        print (f"Your Score is: {players[name]['score']} points.")
+    
+
 
 ############################  Game logic  ######################################
     
@@ -351,14 +408,16 @@ def game():
                 player_num= playerInput()
                 if validate_input(player_num):
                     number=random_number.copy()
-                    evaluate_player_number(name,players,player_num,number)
+                    evaluate_player_number(difficulty_level,name,players,player_num,number)
+                    display_score_player(name, players,difficulty_level)
                 else:
                     player_num= input()
                     while validate_input(player_num)==False:
                         player_num= input()
                     
                     number=random_number.copy()
-                    evaluate_player_number(name,players,player_num,number)
+                    evaluate_player_number(difficulty_level,name,players,player_num,number)
+                    display_score_player(name, players,difficulty_level)
                 num_attempts-=1
                 inf['player_attempts'] -= 1
             else :
@@ -367,14 +426,18 @@ def game():
                 player_num= playerInput()
                 if validate_input(player_num):
                     number=random_number.copy()
-                    evaluate_player_number(name,players,player_num, number)
+                    evaluate_player_number(difficulty_level,name,players,player_num, number)
+                    display_score_player(name, players,difficulty_level)
+
                 else:
                     player_num= input()
                 
                     while validate_input(player_num)==False:
                         player_num= input()
                     number=random_number.copy()
-                    evaluate_player_number(name,players,player_num,number)
+                    evaluate_player_number(difficulty_level,name,players,player_num,number)
+                    display_score_player(name, players,difficulty_level)
+
                 num_attempts-=1
                 inf['player_attempts'] -= 1
         
