@@ -317,7 +317,7 @@ def initialize_player_attempts(player_names,difficulty_level):
         num_attempts=10
 
     else:
-        players={name:{'attempts_history':[],'player_attempts':8,'score':0,'last_score':0, 'penalized': False}for name in player_names}
+        players={name:{'attempt_history':[],'player_attempts':8,'score':0,'last_score':0, 'penalized': False}for name in player_names}
         num_attempts=8
 
     return players
@@ -366,7 +366,7 @@ def display_score_player(name, players,difficulty_level):
         if difficulty_level=='1':
             print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 50 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
         elif difficulty_level=='2':
-            print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 109 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
+            print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 100 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
         else: 
             print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 150 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
 
