@@ -227,7 +227,7 @@ def display_Number_of_players_menu():
     * 1. One player                               *
     * 2. Two players                              *        
     * 3. Three players                            * 
-    * 2. Four players                             * 
+    * 4. Four players                             * 
     *                                             *
     ***********************************************
     """
@@ -300,8 +300,17 @@ def game_options():
 def request_player_names(number_of_players):
     players=[]
     for i in range(int(number_of_players)):
-       player=input(f"Enter the name of the player number {i+1}:\n")
-       players.append(player)
+        while True:
+            player=input(f"Enter the name or username of the player number {i+1}:\n")
+            if player.strip():
+                if player not in players:
+                    players.append(player)
+                    break
+                else:
+                    print(" Player name already exists. Please enter another player or username. ")
+            else:
+                print("Please enter a valid player name or username. This entry cannot be empty. ")
+
     return players
 
 
