@@ -373,12 +373,23 @@ def display_score_player(name, players,difficulty_level):
     if players[name]['penalized']==True:
         
         if difficulty_level=='1':
-            print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 50 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
-        elif difficulty_level=='2':
-            print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 100 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
-        else: 
-            print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 150 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
+            if players[name]['player_attempts']>1:
+                print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 50 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
+            else:
+                print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 50 points for decreasing your hits from the last attempt.\n")
 
+        elif difficulty_level=='2':
+            if players[name]['player_attempts']>1:
+                print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 100 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
+            else:
+                print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 100 points for decreasing your hits from the last attempt. \n")
+
+        else: 
+            if players[name]['player_attempts']>1:
+                print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 150 points for decreasing your hits from the last attempt. \nCheer up for the next attempt.\n You can do it! ")
+            else:
+                print(f"Your Score is: {players[name]['score']} points.\nYou were penalized 150 points for decreasing your hits from the last attempt. \n")
+              
         players[name]['penalized']=False
     else:
         print (f"Your Score is: {players[name]['score']} points.")
