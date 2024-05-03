@@ -108,7 +108,7 @@ def get_number(difficulty_level):
     #
     for digit in num:
         random_number.append(digit)
-    print(random_number)
+    #print(random_number)
 
 # Function that allows the player to enter a 4-digit number. 
 def playerInput():
@@ -316,19 +316,21 @@ def request_player_names(number_of_players):
 
 def initialize_player_attempts(player_names,difficulty_level,number_of_players):
     global num_attempts
+    global max_attempts
 
     if difficulty_level=='1':
         players= {name:{'attempt_history':[],'player_attempts':12,'score':0,'last_score':0,'penalized':False} for name in player_names}
         num_attempts=12 *int(number_of_players)
+        max_attempts=12
 
     elif difficulty_level=='2':
         players={name:{'attempt_history':[],'player_attempts':10,'score':0,'last_score':0,'penalized': False} for name in player_names}
         num_attempts=10 *int(number_of_players)
-
+        max_attempts=10
     else:
         players={name:{'attempt_history':[],'player_attempts':8,'score':0,'last_score':0, 'penalized': False}for name in player_names}
         num_attempts=8 *int(number_of_players)
-
+        max_attempts=8
     return players
 
 
@@ -412,7 +414,6 @@ def game():
 
     get_number(difficulty_level)
 
-    max_attempts=num_attempts
 
     while num_attempts>0:
     
