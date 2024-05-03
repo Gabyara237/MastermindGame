@@ -305,20 +305,20 @@ def request_player_names(number_of_players):
     return players
 
 
-def initialize_player_attempts(player_names,difficulty_level):
+def initialize_player_attempts(player_names,difficulty_level,number_of_players):
     global num_attempts
 
     if difficulty_level=='1':
         players= {name:{'attempt_history':[],'player_attempts':12,'score':0,'last_score':0,'penalized':False} for name in player_names}
-        num_attempts=12
+        num_attempts=12 *int(number_of_players)
 
     elif difficulty_level=='2':
         players={name:{'attempt_history':[],'player_attempts':10,'score':0,'last_score':0,'penalized': False} for name in player_names}
-        num_attempts=10
+        num_attempts=10 *int(number_of_players)
 
     else:
         players={name:{'attempt_history':[],'player_attempts':8,'score':0,'last_score':0, 'penalized': False}for name in player_names}
-        num_attempts=8
+        num_attempts=8 *int(number_of_players)
 
     return players
 
@@ -388,7 +388,8 @@ def game():
     difficulty_level,number_of_players=game_options()
     player_names=request_player_names(number_of_players)
     #Inicializamos los intentos de cada jugador segun el nivel de dificultad seleccionado:
-    players=initialize_player_attempts(player_names,difficulty_level)
+    players=initialize_player_attempts(player_names,difficulty_level, number_of_players)
+
     get_number(difficulty_level)
 
     max_attempts=num_attempts
